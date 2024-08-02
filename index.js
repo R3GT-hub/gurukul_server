@@ -79,7 +79,7 @@ app.post("/login", async (req, res) => {
         .cookie("token", token, {
           httpOnly: true,
           secure: true,
-          domain: "gurukul-client.onrender.com",
+          domain: "gurukul-server.onrender.com",
           sameSite: "None",
         })
         .json({
@@ -155,7 +155,7 @@ app.get("/profile", verifyToken, async (req, res) => {
 app.post("/logout", (req, res) => {
   res.clearCookie("token", {
     sameSite: "none",
-    domain: "gurukul-client.onrender.com",
+    domain: "gurukul-server.onrender.com",
     secure: true,
   });
   res.status(200).json({ message: "Logged out successfully" });
