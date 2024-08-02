@@ -9,7 +9,7 @@ const jwt = require("jsonwebtoken");
 const cookieParser = require("cookie-parser");
 const multer = require("multer");
 const fs = require("fs");
-const dotenv=require("dotenv");
+const dotenv = require("dotenv");
 const app = express();
 
 dotenv.config();
@@ -21,13 +21,10 @@ const uploadMiddleware = multer({ dest: "uploads/" });
 const secret = process.env.secret;
 
 const connect = async () => {
-  await mongoose.connect(
-    process.env.url,
-    {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    }
-  );
+  await mongoose.connect(process.env.url, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  });
   console.log("Mongodb connected");
 };
 
@@ -77,10 +74,18 @@ app.post("/login", async (req, res) => {
   if (passOk) {
     jwt.sign({ username, id: userDoc._id }, secret, {}, (err, token) => {
       if (err) throw err;
-      res.status(200).cookie("token", token).json({
-        id: userDoc._id,
-        username,
-      });
+      res
+        .status(200)
+        .cookie("token", token, {
+          httpOnly: true,
+          secure: true,
+          domain: 'localhost',
+          sameSite: "None",
+        })
+        .json({
+          id: userDoc._id,
+          username,
+        });
     });
     return;
   } else {
@@ -88,47 +93,57 @@ app.post("/login", async (req, res) => {
   }
 });
 
-app.post("/post", uploadMiddleware.single("file"), verifyToken, async (req, res) => {
-  const { originalname, path } = req.file;
-  const parts = originalname.split(".");
-  const ext = parts[parts.length - 1];
-  const newPath = path + "." + ext;
-  fs.renameSync(path, newPath);
+app.post(
+  "/post",
+  uploadMiddleware.single("file"),
+  verifyToken,
+  async (req, res) => {
+    const { originalname, path } = req.file;
+    const parts = originalname.split(".");
+    const ext = parts[parts.length - 1];
+    const newPath = path + "." + ext;
+    fs.renameSync(path, newPath);
 
-  const { title, summary, content, cloudpath, website } = req.body;
-  const postDoc = await Post.create({
-    title,
-    summary,
-    cloudpath,
-    content,
-    cover: newPath,
-    website: website,
-    author: req.user.id,
-  });
+    const { title, summary, content, cloudpath, website } = req.body;
+    const postDoc = await Post.create({
+      title,
+      summary,
+      cloudpath,
+      content,
+      cover: newPath,
+      website: website,
+      author: req.user.id,
+    });
 
-  res.json(postDoc);
-});
+    res.json(postDoc);
+  }
+);
 
-app.post("/resources", uploadMiddleware.single("file"), verifyToken, async (req, res) => {
-  const { originalname, path } = req.file;
-  const parts = originalname.split(".");
-  const ext = parts[parts.length - 1];
-  const newPath = path + "." + ext;
-  fs.renameSync(path, newPath);
+app.post(
+  "/resources",
+  uploadMiddleware.single("file"),
+  verifyToken,
+  async (req, res) => {
+    const { originalname, path } = req.file;
+    const parts = originalname.split(".");
+    const ext = parts[parts.length - 1];
+    const newPath = path + "." + ext;
+    fs.renameSync(path, newPath);
 
-  const { title, summary, content, cloudpath, website } = req.body;
-  const postDoc = await Resources.create({
-    title,
-    summary,
-    cloudpath,
-    content,
-    cover: newPath,
-    website: website,
-    author: req.user.id,
-  });
+    const { title, summary, content, cloudpath, website } = req.body;
+    const postDoc = await Resources.create({
+      title,
+      summary,
+      cloudpath,
+      content,
+      cover: newPath,
+      website: website,
+      author: req.user.id,
+    });
 
-  res.json(postDoc);
-});
+    res.json(postDoc);
+  }
+);
 
 app.get("/profile", verifyToken, async (req, res) => {
   if (!req.user) {
@@ -191,5 +206,5 @@ app.get("/", (req, res) => {
 
 app.listen(4000, () => {
   connect();
-  console.log(`Server Running on Port:4000`);
+  console.log("Server Running on Port:4000");
 });
