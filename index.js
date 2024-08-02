@@ -80,7 +80,7 @@ app.post("/login", async (req, res) => {
           path: "/",
           httpOnly: true,
           secure: true,
-          domain: ".onrender.com",
+          domain: "onrender.com",
           sameSite: "None",
         })
         .json({
@@ -156,9 +156,10 @@ app.get("/profile", verifyToken, async (req, res) => {
 app.post("/logout", (req, res) => {
   res.clearCookie("token", {
     path: "/",
-    sameSite: "none",
-    domain: ".onrender.com",
+    httpOnly: true,
     secure: true,
+    domain: "onrender.com",
+    sameSite: "None",
   });
   // res.clearCookie("token");
   res.status(200).json({ message: "Logged out successfully" });
