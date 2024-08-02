@@ -154,13 +154,13 @@ app.get("/profile", verifyToken, async (req, res) => {
   res.json({ username: userDoc.username, isAdmin: userDoc.isAdmin });
 });
 app.post("/logout", (req, res) => {
-  // res.clearCookie("token", {
-  //   path: "/",
-  //   sameSite: "none",
-  //   domain: "gurukul-server.onrender.com",
-  //   secure: true,
-  // });
-  res.clearCookie("token");
+  res.clearCookie("token", {
+    path: "/",
+    sameSite: "none",
+    domain: "gurukul-server.onrender.com",
+    secure: true,
+  });
+  // res.clearCookie("token");
   res.status(200).json({ message: "Logged out successfully" });
 });
 
