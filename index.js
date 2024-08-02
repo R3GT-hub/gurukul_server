@@ -79,7 +79,6 @@ app.post("/login", async (req, res) => {
         .cookie("token", token, {
           httpOnly: true,
           secure: true,
-          domain: 'gurukul-server.onrender.com',
           sameSite: "None",
         })
         .json({
