@@ -79,7 +79,7 @@ app.post("/login", async (req, res) => {
         .cookie("token", token, {
           httpOnly: true,
           secure: true,
-          domain: 'https://gurukul-client.onrender.com/',
+          domain: 'gurukul-client.onrender.com',
           sameSite: "None",
         })
         .json({
